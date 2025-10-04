@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Productos - Gestión de Inventarios</title>
-    <link rel="stylesheet" href="css/productos.css">
-
-</head>
 <body>
+
 <header>
     <h1>📦 Productos</h1>
     <nav class="menu">
@@ -38,6 +36,56 @@
         <tbody></tbody>
     </table>
 </section>
-<script src="js/funciones.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const contextPath = window.location.pathname.split('/')[1]; // Ajusta el contexto
+        const tabla = document.querySelector("#tablaProductos tbody");
+        const form = document.querySelector("#formProducto");
+
+        // Función para cargar productos en la tabla
+        function cargarProductos() {
+            fetch(`/${contextPath}/productos`)
+                .then(resp => resp.json())
+                .then(data => {
+                    if(!tabla) return;
+                    tabla.innerHTML = "";
+                    data.forEach(p => {
+                        const fila = document.createElement("tr");
+                        fila.innerHTML = `
+                        <td>${p.id}</td>
+                        <td>${p.nombre}</td>
+                        <td>${p.descripcion}</td>
+                        <td>${p.precio.toFixed(2)}</td>
+                        <td>${p.stockActual}</td>
+                    `;
+                        tabla.appendChild(fila);
+                    });
+                });
+        }
+
+        // Enviar nuevo producto
+        if(form){
+            form.addEventListener("submit", e => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                fetch(`/${contextPath}/productos`, {
+                    method: 'POST',
+                    body: new URLSearchParams(formData)
+                })
+                    .then(resp => resp.text())
+                    .then(msg => {
+                        alert(msg);
+                        form.reset();
+                        cargarProductos();
+                    });
+            });
+        }
+
+        // Inicializar tabla
+        cargarProductos();
+    });
+</script>
+
 </body>
 </html>

@@ -1,0 +1,159 @@
+/* ===== Paleta de colores ===== */
+:root {
+    --azul-oscuro: #1F3A60;
+    --azul-claro: #4A90E2;
+    --azul-suave: #D6E4F0;
+    --dorado-suave: #D4AF7F;
+    --gris-claro: #F5F5F5;
+    --gris-medio: #E0E0E0;
+    --texto-principal: #1A1A1A;
+}
+
+/* ===== Reset básico ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ===== Body ===== */
+body {
+    background-color: var(--gris-claro);
+    color: var(--texto-principal);
+    line-height: 1.6;
+}
+
+/* ===== Header ===== */
+header {
+    background-color: var(--azul-oscuro);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+header h1 {
+    font-size: 1.8rem;
+}
+
+.menu button {
+    background-color: var(--dorado-suave);
+    color: var(--azul-oscuro);
+    border: none;
+    padding: 10px 20px;
+    margin-left: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.menu button:hover {
+    background-color: var(--azul-claro);
+    color: white;
+}
+
+/* ===== Sección principal ===== */
+section {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+}
+
+/* ===== Formulario ===== */
+form#formMovimiento {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+form#formMovimiento select,
+form#formMovimiento input {
+    flex: 1 1 180px;
+    padding: 10px 15px;
+    border: 1px solid var(--gris-medio);
+    border-radius: 8px;
+    outline: none;
+    transition: 0.3s;
+}
+
+form#formMovimiento select:focus,
+form#formMovimiento input:focus {
+    border-color: var(--azul-claro);
+    box-shadow: 0 0 5px rgba(74,144,226,0.5);
+}
+
+form#formMovimiento button {
+    padding: 10px 25px;
+    background-color: var(--azul-claro);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+form#formMovimiento button:hover {
+    background-color: var(--azul-oscuro);
+}
+
+/* ===== Tabla ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+thead {
+    background-color: var(--azul-claro);
+    color: white;
+}
+
+thead th {
+    padding: 12px;
+    text-align: left;
+}
+
+tbody tr {
+    background-color: white;
+    transition: background 0.3s;
+}
+
+tbody tr:nth-child(even) {
+    background-color: var(--azul-suave);
+}
+
+tbody tr:hover {
+    background-color: var(--dorado-suave);
+    color: var(--azul-oscuro);
+}
+
+tbody td {
+    padding: 10px;
+}
+
+/* ===== Responsividad ===== */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .menu button {
+        margin: 5px 5px 0 0;
+    }
+
+    form#formMovimiento {
+        flex-direction: column;
+    }
+}

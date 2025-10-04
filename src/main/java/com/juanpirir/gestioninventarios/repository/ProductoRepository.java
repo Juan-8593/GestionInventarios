@@ -2,31 +2,62 @@ package com.juanpirir.gestioninventarios.repository;
 
 import com.juanpirir.gestioninventarios.model.Producto;
 import com.juanpirir.gestioninventarios.util.JPAUtil;
-
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+
 import java.util.List;
 
 public class ProductoRepository {
 
-    public List<Producto> listarTodos() {
+    public List<Producto> findAll() {
         EntityManager em = JPAUtil.getEntityManager();
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Producto> cq = cb.createQuery(Producto.class);
-        Root<Producto> root = cq.from(Producto.class);
-        cq.select(root);
-        List<Producto> productos = em.createQuery(cq).getResultList();
-        em.close();
-        return productos;
+        try {
+            TypedQuery<Producto> query = em.createQuery("SELECT p FROM Producto p", Producto.class);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
-    public void guardar(Producto producto) {
+    public Producto findById(Long id) {
         EntityManager em = JPAUtil.getEntityManager();
-        em.getTransaction().begin();
-        em.persist(producto);
-        em.getTransaction().commit();
-        em.close();
+        try {
+            return em.find(Producto.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
+    public void save(Producto producto) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            if (producto.getId() == null) {
+                em.persist(producto);
+            } else {
+                em.merge(producto);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public void delete(Long id) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Producto producto = em.find(Producto.class, id);
+            if (producto != null) em.remove(producto);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
     }
 }

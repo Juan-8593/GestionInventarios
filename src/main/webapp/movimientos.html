@@ -1,10 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Movimientos - Gestión de Inventarios</title>
+    <link rel="stylesheet" href="css/movimientos.css">
 </head>
 <body>
+<header>
+    <h1> Movimientos de Stock</h1>
+    <nav class="menu">
+        <button onclick="location.href='index.html'">Dashboard</button>
+        <button onclick="location.href='productos.html'">Productos</button>
+        <button onclick="location.href='categorias.html'">Categorías</button>
+    </nav>
+</header>
 
+<section>
+    <form id="formMovimiento">
+        <select name="productoId" required id="selectProducto"></select>
+        <input type="number" name="cantidad" placeholder="Cantidad" min="1" required>
+        <select name="tipo" required>
+            <option value="Entrada">Entrada</option>
+            <option value="Salida">Salida</option>
+        </select>
+        <input type="text" name="motivo" placeholder="Motivo">
+        <button type="submit">Registrar Movimiento</button>
+    </form>
+
+    <table id="tablaMovimientos">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Tipo</th>
+            <th>Motivo</th>
+            <th>Fecha</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</section>
+
+<script>
+    document.addEventListener("DOMContentLoaded",()=>{
+        const tabla=document.querySelector("#tablaMovimientos tbody");
+        const form=document.querySelector("#formMovimiento");
+        const selectProducto=document.getElementById("selectProducto");
+
+        // Cargar productos en select
+        fetch('productos').then(r=>r.json()).then(data=>{
+            data.forEach(p=>{
+                const opt=document.createElement("option");
+                opt.value=p.id;
+                opt.textContent=p.nombre;
+                selectProducto.appendChild(opt);
+            });
+        });
+
+        function cargarMovimientos(){
+            fetch('movimientos').then(r=>r.json()).then(data=>{
+                tabla.innerHTML="";
+                data.forEach(m=>{
+                    const fila=document.createElement("tr");
+                    fila.innerHTML=`<td>${m.id}</td>
+                <td>${m.productoNombre}</td>
+                <td>${m.cantidad}</td>
+                <td>${m.tipo}</td>
+                <td>${m.motivo}</td>
+                <td>${new Date(m.fecha).toLocaleString()}</td>`;
+                    tabla.appendChild(fila);
+                });
+            });
+        }
+
+        form.addEventListener("submit",e=>{
+            e.preventDefault();
+            const fd=new FormData(form);
+            fetch('movimientos',{method:'POST',body:new URLSearchParams(fd)})
+                .then(r=>r.text()).then(msg=>{
+                alert(msg);
+                form.reset();
+                cargarMovimientos();
+            });
+        });
+
+        cargarMovimientos();
+    });
+</script>
 </body>
 </html>
