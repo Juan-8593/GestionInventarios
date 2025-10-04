@@ -7,7 +7,7 @@
 </head>
 <body>
 <header>
-    <h1> Categorías</h1>
+    <h1>Categorías</h1>
     <nav class="menu">
         <button onclick="location.href='index.html'">Dashboard</button>
         <button onclick="location.href='productos.html'">Productos</button>
@@ -33,30 +33,38 @@
 </section>
 
 <script>
-    document.addEventListener("DOMContentLoaded",()=>{
-        const tabla=document.querySelector("#tablaCategorias tbody");
-        const form=document.querySelector("#formCategoria");
+    document.addEventListener("DOMContentLoaded", () => {
+        const tabla = document.querySelector("#tablaCategorias tbody");
+        const form = document.getElementById("formCategoria");
+        let categorias = JSON.parse(localStorage.getItem("categorias")) || [];
 
-        function cargarCategorias(){
-            fetch('categorias').then(r=>r.json()).then(data=>{
-                tabla.innerHTML="";
-                data.forEach(c=>{
-                    const fila=document.createElement("tr");
-                    fila.innerHTML=`<td>${c.id}</td><td>${c.nombre}</td>`;
-                    tabla.appendChild(fila);
-                });
+        function guardarCategorias() {
+            localStorage.setItem("categorias", JSON.stringify(categorias));
+            cargarCategorias();
+        }
+
+        function cargarCategorias() {
+            tabla.innerHTML = "";
+            categorias.forEach(c => {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+                <td>${c.id}</td>
+                <td>${c.nombre}</td>
+            `;
+                tabla.appendChild(fila);
             });
         }
 
-        form.addEventListener("submit",e=>{
+        form.addEventListener("submit", e => {
             e.preventDefault();
-            const fd=new FormData(form);
-            fetch('categorias',{method:'POST',body:new URLSearchParams(fd)})
-                .then(r=>r.text()).then(msg=>{
-                alert(msg);
-                form.reset();
-                cargarCategorias();
+            const data = Object.fromEntries(new FormData(form));
+            const id = categorias.length > 0 ? categorias[categorias.length - 1].id + 1 : 1;
+            categorias.push({
+                id: id,
+                nombre: data.nombre
             });
+            guardarCategorias();
+            form.reset();
         });
 
         cargarCategorias();

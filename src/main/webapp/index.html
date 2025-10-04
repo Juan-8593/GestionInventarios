@@ -10,14 +10,8 @@
     <h1>Gestión de Inventarios</h1>
     <nav class="menu">
         <button onclick="location.href='productos.html'">Productos</button>
-        <button onclick="location.href='categorias.html'">Categorías</button>
-        <button onclick="location.href='movimientos.html'">Movimientos</button>
     </nav>
 </header>
-
-<div class="acciones">
-    <button onclick="location.href='productos.html'">Agregar / Ver Productos</button>
-</div>
 
 <section class="dashboard">
     <div class="card">
@@ -29,23 +23,26 @@
         <p id="stockBajo">0</p>
     </div>
     <div class="card">
-        <h2>Productos inactivos</h2>
-        <p id="productosInactivos">0</p>
-    </div>
-    <div class="card">
-        <h2>Total de categorías</h2>
-        <p id="totalCategorias">0</p>
-    </div>
-    <div class="card">
-        <h2>Movimientos esta semana</h2>
-        <p id="movimientosSemana">0</p>
-    </div>
-    <div class="card">
         <h2>Última actualización</h2>
         <p id="ultimaActualizacion">--/--/----</p>
     </div>
 </section>
 
-<script src="js/funciones.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const productos = JSON.parse(localStorage.getItem("productos")) || [];
+
+        const totalProductos = document.getElementById('totalProductos');
+        const stockBajo = document.getElementById('stockBajo');
+        const ultimaActualizacion = document.getElementById('ultimaActualizacion');
+
+        totalProductos.textContent = productos.length;
+        stockBajo.textContent = productos.filter(p => p.stock < 5).length;
+        if(productos.length > 0){
+            const ultima = productos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
+            ultimaActualizacion.textContent = new Date(ultima.fecha).toLocaleString();
+        }
+    });
+</script>
 </body>
 </html>

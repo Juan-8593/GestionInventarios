@@ -7,11 +7,10 @@
 </head>
 <body>
 <header>
-    <h1> Movimientos de Stock</h1>
+    <h1>Movimientos de Stock</h1>
     <nav class="menu">
         <button onclick="location.href='index.html'">Dashboard</button>
         <button onclick="location.href='productos.html'">Productos</button>
-        <button onclick="location.href='categorias.html'">Categorías</button>
     </nav>
 </header>
 
@@ -43,48 +42,82 @@
 </section>
 
 <script>
-    document.addEventListener("DOMContentLoaded",()=>{
-        const tabla=document.querySelector("#tablaMovimientos tbody");
-        const form=document.querySelector("#formMovimiento");
-        const selectProducto=document.getElementById("selectProducto");
+    document.addEventListener("DOMContentLoaded", () => {
+        const selectProducto = document.getElementById("selectProducto");
+        const tabla = document.querySelector("#tablaMovimientos tbody");
+        const form = document.getElementById("formMovimiento");
 
-        // Cargar productos en select
-        fetch('productos').then(r=>r.json()).then(data=>{
-            data.forEach(p=>{
-                const opt=document.createElement("option");
-                opt.value=p.id;
-                opt.textContent=p.nombre;
+        // Cargar productos desde localStorage
+        let productos = JSON.parse(localStorage.getItem("productos")) || [];
+        let movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
+
+        function cargarProductosSelect() {
+            selectProducto.innerHTML = "";
+            productos.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.id;
+                opt.textContent = p.nombre;
                 selectProducto.appendChild(opt);
-            });
-        });
-
-        function cargarMovimientos(){
-            fetch('movimientos').then(r=>r.json()).then(data=>{
-                tabla.innerHTML="";
-                data.forEach(m=>{
-                    const fila=document.createElement("tr");
-                    fila.innerHTML=`<td>${m.id}</td>
-                <td>${m.productoNombre}</td>
-                <td>${m.cantidad}</td>
-                <td>${m.tipo}</td>
-                <td>${m.motivo}</td>
-                <td>${new Date(m.fecha).toLocaleString()}</td>`;
-                    tabla.appendChild(fila);
-                });
             });
         }
 
-        form.addEventListener("submit",e=>{
-            e.preventDefault();
-            const fd=new FormData(form);
-            fetch('movimientos',{method:'POST',body:new URLSearchParams(fd)})
-                .then(r=>r.text()).then(msg=>{
-                alert(msg);
-                form.reset();
-                cargarMovimientos();
+        function cargarMovimientos() {
+            tabla.innerHTML = "";
+            movimientos.forEach(m => {
+                const producto = productos.find(p => p.id === m.productoId);
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+                <td>${m.id}</td>
+                <td>${producto ? producto.nombre : "Desconocido"}</td>
+                <td>${m.cantidad}</td>
+                <td>${m.tipo}</td>
+                <td>${m.motivo || ""}</td>
+                <td>${new Date(m.fecha).toLocaleString()}</td>
+            `;
+                tabla.appendChild(fila);
             });
+        }
+
+        function guardarMovimientos() {
+            localStorage.setItem("movimientos", JSON.stringify(movimientos));
+            cargarMovimientos();
+        }
+
+        // Registrar movimiento
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(form));
+            const productoId = parseInt(data.productoId);
+            const cantidad = parseInt(data.cantidad);
+
+            // Actualizar stock del producto
+            const producto = productos.find(p => p.id === productoId);
+            if (producto) {
+                if (data.tipo === "Entrada") {
+                    producto.stock += cantidad;
+                } else {
+                    producto.stock -= cantidad;
+                    if(producto.stock < 0) producto.stock = 0;
+                }
+                localStorage.setItem("productos", JSON.stringify(productos));
+            }
+
+            // Agregar movimiento
+            const id = movimientos.length > 0 ? movimientos[movimientos.length-1].id + 1 : 1;
+            movimientos.push({
+                id: id,
+                productoId: productoId,
+                cantidad: cantidad,
+                tipo: data.tipo,
+                motivo: data.motivo,
+                fecha: new Date()
+            });
+            guardarMovimientos();
+            form.reset();
         });
 
+        // Inicializar
+        cargarProductosSelect();
         cargarMovimientos();
     });
 </script>

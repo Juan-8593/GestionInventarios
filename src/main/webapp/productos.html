@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Productos - Gestión de Inventarios</title>
+    <link rel="stylesheet" href="css/productos.css">
+</head>
 <body>
-
 <header>
-    <h1>📦 Productos</h1>
+    <h1>Productos</h1>
     <nav class="menu">
         <button onclick="location.href='index.html'">Dashboard</button>
-        <button onclick="location.href='categorias.html'">Categorías</button>
-        <button onclick="location.href='movimientos.html'">Movimientos</button>
     </nav>
 </header>
 
@@ -31,6 +30,7 @@
             <th>Descripción</th>
             <th>Precio</th>
             <th>Stock</th>
+            <th>Acciones</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -39,53 +39,59 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const contextPath = window.location.pathname.split('/')[1]; // Ajusta el contexto
         const tabla = document.querySelector("#tablaProductos tbody");
         const form = document.querySelector("#formProducto");
+        let productos = JSON.parse(localStorage.getItem("productos")) || [];
 
-        // Función para cargar productos en la tabla
-        function cargarProductos() {
-            fetch(`/${contextPath}/productos`)
-                .then(resp => resp.json())
-                .then(data => {
-                    if(!tabla) return;
-                    tabla.innerHTML = "";
-                    data.forEach(p => {
-                        const fila = document.createElement("tr");
-                        fila.innerHTML = `
-                        <td>${p.id}</td>
-                        <td>${p.nombre}</td>
-                        <td>${p.descripcion}</td>
-                        <td>${p.precio.toFixed(2)}</td>
-                        <td>${p.stockActual}</td>
-                    `;
-                        tabla.appendChild(fila);
-                    });
-                });
+        function guardar() {
+            localStorage.setItem("productos", JSON.stringify(productos));
+            cargarTabla();
         }
 
-        // Enviar nuevo producto
-        if(form){
-            form.addEventListener("submit", e => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                fetch(`/${contextPath}/productos`, {
-                    method: 'POST',
-                    body: new URLSearchParams(formData)
-                })
-                    .then(resp => resp.text())
-                    .then(msg => {
-                        alert(msg);
-                        form.reset();
-                        cargarProductos();
-                    });
+        function cargarTabla() {
+            tabla.innerHTML = "";
+            productos.forEach(p => {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+                <td>${p.id}</td>
+                <td>${p.nombre}</td>
+                <td>${p.descripcion}</td>
+                <td>${p.precio.toFixed(2)}</td>
+                <td>${p.stock}</td>
+                <td>
+                    <button class="eliminar" data-id="${p.id}">Eliminar</button>
+                </td>
+            `;
+                tabla.appendChild(fila);
             });
         }
 
-        // Inicializar tabla
-        cargarProductos();
+        form.addEventListener("submit", e => {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(form));
+            const id = productos.length > 0 ? productos[productos.length-1].id + 1 : 1;
+            productos.push({
+                id: id,
+                nombre: data.nombre,
+                descripcion: data.descripcion,
+                precio: parseFloat(data.precio),
+                stock: parseInt(data.stock),
+                fecha: new Date()
+            });
+            guardar();
+            form.reset();
+        });
+
+        tabla.addEventListener("click", e => {
+            if(e.target.classList.contains("eliminar")){
+                const id = parseInt(e.target.dataset.id);
+                productos = productos.filter(p => p.id !== id);
+                guardar();
+            }
+        });
+
+        cargarTabla();
     });
 </script>
-
 </body>
 </html>
