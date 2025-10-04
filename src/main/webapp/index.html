@@ -22,7 +22,19 @@
     </div>
     <div class="card">
         <h2>Productos con stock bajo</h2>
-        <p id="stockBajo">0</p>
+        <p id="stockBajo">5</p>
+    </div>
+    <div class="card">
+        <h2>Productos inactivos</h2>
+        <p id="productosInactivos">0</p>
+    </div>
+    <div class="card">
+        <h2>Total de categorías</h2>
+        <p id="totalCategorias">0</p>
+    </div>
+    <div class="card">
+        <h2>Movimientos esta semana</h2>
+        <p id="movimientosSemana">0</p>
     </div>
     <div class="card">
         <h2>Última actualización</h2>
@@ -33,13 +45,38 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const productos = JSON.parse(localStorage.getItem("productos")) || [];
+        const categorias = JSON.parse(localStorage.getItem("categorias")) || [];
+        const movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
 
         const totalProductos = document.getElementById('totalProductos');
         const stockBajo = document.getElementById('stockBajo');
+        const productosInactivos = document.getElementById('productosInactivos');
+        const totalCategorias = document.getElementById('totalCategorias');
+        const movimientosSemana = document.getElementById('movimientosSemana');
         const ultimaActualizacion = document.getElementById('ultimaActualizacion');
 
+        // KPI Productos
         totalProductos.textContent = productos.length;
-        stockBajo.textContent = productos.filter(p => p.stock < 5).length;
+        stockBajo.textContent = productos.filter(p => p.stock < 5 && p.stock > 0).length;
+        productosInactivos.textContent = productos.filter(p => p.stock === 0).length;
+
+        // KPI Categorías
+        totalCategorias.textContent = categorias.length;
+
+        // KPI Movimientos de esta semana
+        const hoy = new Date();
+        const inicioSemana = new Date();
+        inicioSemana.setDate(hoy.getDate() - hoy.getDay()); // domingo
+        const finSemana = new Date(inicioSemana);
+        finSemana.setDate(inicioSemana.getDate() + 6); // sábado
+
+        const movimientosSemanaData = movimientos.filter(m => {
+            const fecha = new Date(m.fecha);
+            return fecha >= inicioSemana && fecha <= finSemana;
+        });
+        movimientosSemana.textContent = movimientosSemanaData.length;
+
+        // KPI Última actualización inventario
         if(productos.length > 0){
             const ultima = productos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0];
             ultimaActualizacion.textContent = new Date(ultima.fecha).toLocaleString();
