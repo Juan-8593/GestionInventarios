@@ -4,6 +4,31 @@
     <meta charset="UTF-8">
     <title>Categorías - Gestión de Inventarios</title>
     <link rel="stylesheet" href="css/categorias.css">
+    <style>
+        /* Botones dentro de la tabla adaptados al estilo principal */
+        table button {
+            margin: 2px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        table button.editar {
+            background-color: #28a745; /* verde */
+            color: white;
+        }
+        table button.eliminar {
+            background-color: #dc3545; /* rojo */
+            color: white;
+        }
+        table button.editar:hover {
+            background-color: #218838;
+        }
+        table button.eliminar:hover {
+            background-color: #c82333;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -17,8 +42,9 @@
 
 <section>
     <form id="formCategoria">
-        <input type="text" name="nombre" placeholder="Nombre de la categoría" required>
-        <button type="submit">Agregar Categoría</button>
+        <input type="hidden" id="categoriaId">
+        <input type="text" name="nombre" id="categoriaNombre" placeholder="Nombre de la categoría" required>
+        <button type="submit" id="btnAgregar" class="btn">Agregar Categoría</button>
     </form>
 
     <table id="tablaCategorias">
@@ -26,6 +52,7 @@
         <tr>
             <th>ID</th>
             <th>Nombre</th>
+            <th>Acciones</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -36,6 +63,10 @@
     document.addEventListener("DOMContentLoaded", () => {
         const tabla = document.querySelector("#tablaCategorias tbody");
         const form = document.getElementById("formCategoria");
+        const inputId = document.getElementById("categoriaId");
+        const inputNombre = document.getElementById("categoriaNombre");
+        const btnAgregar = document.getElementById("btnAgregar");
+
         let categorias = JSON.parse(localStorage.getItem("categorias")) || [];
 
         function guardarCategorias() {
@@ -50,6 +81,10 @@
                 fila.innerHTML = `
                 <td>${c.id}</td>
                 <td>${c.nombre}</td>
+                <td>
+                    <button type="button" class="editar" onclick="editarCategoria(${c.id})">Editar</button>
+                    <button type="button" class="eliminar" onclick="eliminarCategoria(${c.id})">Eliminar</button>
+                </td>
             `;
                 tabla.appendChild(fila);
             });
@@ -57,15 +92,40 @@
 
         form.addEventListener("submit", e => {
             e.preventDefault();
-            const data = Object.fromEntries(new FormData(form));
-            const id = categorias.length > 0 ? categorias[categorias.length - 1].id + 1 : 1;
-            categorias.push({
-                id: id,
-                nombre: data.nombre
-            });
+            const nombre = inputNombre.value.trim();
+            const id = inputId.value;
+
+            if (!nombre) return;
+
+            if (id) {
+                const categoria = categorias.find(c => c.id == id);
+                if (categoria) categoria.nombre = nombre;
+                btnAgregar.textContent = "Agregar Categoría";
+            } else {
+                const newId = categorias.length > 0 ? categorias[categorias.length - 1].id + 1 : 1;
+                categorias.push({ id: newId, nombre });
+            }
+
             guardarCategorias();
             form.reset();
+            inputId.value = "";
         });
+
+        window.editarCategoria = function(id) {
+            const categoria = categorias.find(c => c.id == id);
+            if (categoria) {
+                inputId.value = categoria.id;
+                inputNombre.value = categoria.nombre;
+                btnAgregar.textContent = "Actualizar Categoría";
+            }
+        };
+
+        window.eliminarCategoria = function(id) {
+            if (confirm("¿Seguro que deseas eliminar esta categoría?")) {
+                categorias = categorias.filter(c => c.id != id);
+                guardarCategorias();
+            }
+        };
 
         cargarCategorias();
     });
