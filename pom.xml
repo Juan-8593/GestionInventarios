@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.JuanPirir.GestionInventarios</groupId>
+    <groupId>com.juanpirir.gestioninventarios</groupId>
     <artifactId>GestionInventarios</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>GestionInventarios</name>
@@ -12,8 +11,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <junit.version>5.11.0</junit.version>
     </properties>
 
@@ -24,6 +23,14 @@
             <version>11.0.0-M4</version>
             <scope>provided</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.5.2.Final</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

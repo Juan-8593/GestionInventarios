@@ -1,10 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Productos - Gestión de Inventarios</title>
+    <link rel="stylesheet" href="css/productos.css">
+
 </head>
 <body>
+<header>
+    <h1>📦 Productos</h1>
+    <nav class="menu">
+        <button onclick="location.href='index.html'">Dashboard</button>
+        <button onclick="location.href='categorias.html'">Categorías</button>
+        <button onclick="location.href='movimientos.html'">Movimientos</button>
+    </nav>
+</header>
 
+<section>
+    <form id="formProducto">
+        <input type="text" name="nombre" placeholder="Nombre" required>
+        <input type="text" name="descripcion" placeholder="Descripción">
+        <input type="number" name="precio" placeholder="Precio" min="0" step="0.01" required>
+        <input type="number" name="stock" placeholder="Stock" min="0" required>
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <table id="tablaProductos">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Stock</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</section>
+<script src="js/funciones.js"></script>
 </body>
 </html>

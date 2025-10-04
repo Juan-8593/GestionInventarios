@@ -1,10 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Dashboard - Gestión de Inventarios</title>
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
+<header>
+    <h1>Gestión de Inventarios</h1>
+    <nav class="menu">
+        <button onclick="location.href='productos.html'">Productos</button>
+        <button onclick="location.href='categorias.html'">Categorías</button>
+        <button onclick="location.href='movimientos.html'">Movimientos</button>
+    </nav>
+</header>
 
+<div class="acciones">
+    <button onclick="location.href='productos.html'">Agregar / Ver Productos</button>
+</div>
+
+<section class="dashboard">
+    <div class="card">
+        <h2>Total de productos</h2>
+        <p id="totalProductos">0</p>
+    </div>
+    <div class="card">
+        <h2>Productos con stock bajo</h2>
+        <p id="stockBajo">0</p>
+    </div>
+    <div class="card">
+        <h2>Productos inactivos</h2>
+        <p id="productosInactivos">0</p>
+    </div>
+    <div class="card">
+        <h2>Total de categorías</h2>
+        <p id="totalCategorias">0</p>
+    </div>
+    <div class="card">
+        <h2>Movimientos esta semana</h2>
+        <p id="movimientosSemana">0</p>
+    </div>
+    <div class="card">
+        <h2>Última actualización</h2>
+        <p id="ultimaActualizacion">--/--/----</p>
+    </div>
+</section>
+
+<script src="js/funciones.js"></script>
 </body>
 </html>
