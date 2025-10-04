@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <title>Categorías - Gestión de Inventarios</title>
     <link rel="stylesheet" href="css/categorias.css">
-    <style>
-        .menu { display: flex; gap: 10px; margin-bottom: 20px; }
-        .menu button { padding: 8px 12px; background-color: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; }
-        .menu button:hover { background-color: #34495e; }
-    </style>
 </head>
 <body>
 <header>
-    <h1> Categorías</h1>
+    <h1>Categorías</h1>
     <nav class="menu">
         <button onclick="location.href='index.html'">Dashboard</button>
         <button onclick="location.href='productos.html'">Productos</button>
@@ -52,7 +47,10 @@
             tabla.innerHTML = "";
             categorias.forEach(c => {
                 const fila = document.createElement("tr");
-                fila.innerHTML = `<td>${c.id}</td><td>${c.nombre}</td>`;
+                fila.innerHTML = `
+                <td>${c.id}</td>
+                <td>${c.nombre}</td>
+            `;
                 tabla.appendChild(fila);
             });
         }
@@ -61,7 +59,10 @@
             e.preventDefault();
             const data = Object.fromEntries(new FormData(form));
             const id = categorias.length > 0 ? categorias[categorias.length - 1].id + 1 : 1;
-            categorias.push({ id: id, nombre: data.nombre });
+            categorias.push({
+                id: id,
+                nombre: data.nombre
+            });
             guardarCategorias();
             form.reset();
         });

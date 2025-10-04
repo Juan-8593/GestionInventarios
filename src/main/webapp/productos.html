@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <title>Productos - Gestión de Inventarios</title>
     <link rel="stylesheet" href="css/productos.css">
-    <style>
-        .menu { display: flex; gap: 10px; margin-bottom: 20px; }
-        .menu button { padding: 8px 12px; background-color: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; }
-        .menu button:hover { background-color: #34495e; }
-    </style>
 </head>
 <body>
 <header>
-    <h1> Productos</h1>
+    <h1>Productos</h1>
     <nav class="menu">
         <button onclick="location.href='index.html'">Dashboard</button>
         <button onclick="location.href='categorias.html'">Categorías</button>
@@ -47,7 +42,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const tabla = document.querySelector("#tablaProductos tbody");
-        const form = document.querySelector("#formProducto");
+        const form = document.getElementById("formProducto");
         let productos = JSON.parse(localStorage.getItem("productos")) || [];
 
         function guardar() {
@@ -65,7 +60,9 @@
                 <td>${p.descripcion}</td>
                 <td>${p.precio.toFixed(2)}</td>
                 <td>${p.stock}</td>
-                <td><button class="eliminar" data-id="${p.id}">Eliminar</button></td>
+                <td>
+                    <button class="eliminar" data-id="${p.id}">Eliminar</button>
+                </td>
             `;
                 tabla.appendChild(fila);
             });
