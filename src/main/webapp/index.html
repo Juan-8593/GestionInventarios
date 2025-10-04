@@ -66,9 +66,9 @@
         // KPI Movimientos de esta semana
         const hoy = new Date();
         const inicioSemana = new Date();
-        inicioSemana.setDate(hoy.getDate() - hoy.getDay()); // domingo
+        inicioSemana.setDate(hoy.getDate() - hoy.getDay());
         const finSemana = new Date(inicioSemana);
-        finSemana.setDate(inicioSemana.getDate() + 6); // sábado
+        finSemana.setDate(inicioSemana.getDate() + 6);
 
         const movimientosSemanaData = movimientos.filter(m => {
             const fecha = new Date(m.fecha);

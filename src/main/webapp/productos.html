@@ -5,14 +5,13 @@
     <title>Productos - Gestión de Inventarios</title>
     <link rel="stylesheet" href="css/productos.css">
     <style>
-        /* Filtros con mismo “look” que el form de alta */
         .toolbar {
             margin-bottom:12px;
             display:flex;
             gap:8px;
             flex-wrap:wrap;
         }
-        .toolbar input, .toolbar button {
+        .toolbar input, .toolbar select, .toolbar button {
             padding:8px;
             border-radius:6px;
             border:1px solid #ccc;
@@ -30,12 +29,14 @@
 </header>
 
 <section>
-    <!-- 🔎 Filtros (agregado, incluye Catego0ooría) -->
+    <!--  Filtros -->
     <form id="formFiltro" class="toolbar">
         <input type="text" name="id" placeholder="ID" style="max-width:110px;">
         <input type="text" name="nombre" placeholder="Nombre">
         <input type="text" name="descripcion" placeholder="Descripción">
-        <input type="text" name="categoria" placeholder="Categoría"><!-- NUEVO -->
+        <select name="categoria" id="filtroCategoria">
+            <option value="">Categoría</option>
+        </select>
         <input type="number" name="precioMin" placeholder="Precio min" step="0.01" min="0" style="max-width:140px;">
         <input type="number" name="precioMax" placeholder="Precio máx" step="0.01" min="0" style="max-width:140px;">
         <input type="number" name="stockMin" placeholder="Stock min" min="0" style="max-width:120px;">
@@ -44,11 +45,13 @@
         <button type="button" id="btnLimpiar">Limpiar</button>
     </form>
 
-    <!-- ➕ Alta (igual que tenías; solo añadí campo de Categoría para poder llenarla) -->
+    <!-- Alta de productos -->
     <form id="formProducto">
         <input type="text" name="nombre" placeholder="Nombre" required>
         <input type="text" name="descripcion" placeholder="Descripción">
-        <input type="text" name="categoria" placeholder="Categoría"><!-- NUEVO -->
+        <select name="categoria" id="selectCategoria" required>
+            <option value="">Seleccionar categoría</option>
+        </select>
         <input type="number" name="precio" placeholder="Precio" min="0" step="0.01" required>
         <input type="number" name="stock" placeholder="Stock" min="0" required>
         <button type="submit">Agregar Producto</button>
@@ -60,7 +63,7 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Descripción</th>
-            <th>Categoría</th><!-- NUEVO -->
+            <th>Categoría</th>
             <th>Precio</th>
             <th>Stock</th>
             <th>Acciones</th>
@@ -75,21 +78,42 @@
         const tabla = document.querySelector("#tablaProductos tbody");
         const form = document.getElementById("formProducto");
         const formFiltro = document.getElementById("formFiltro");
-        let productos = JSON.parse(localStorage.getItem("productos")) || [];
+        const selectCategoria = document.getElementById("selectCategoria");
+        const filtroCategoria = document.getElementById("filtroCategoria");
 
+        let productos = JSON.parse(localStorage.getItem("productos")) || [];
+        let categorias = JSON.parse(localStorage.getItem("categorias")) || [];
+
+        // --- Carga las categorias desde local storage buajaj ---
+        function cargarCategorias() {
+            selectCategoria.innerHTML = '<option value="">Seleccionar categoría</option>';
+            filtroCategoria.innerHTML = '<option value="">Categoría</option>';
+            categorias.forEach(c => {
+                const opt = document.createElement("option");
+                opt.value = c.nombre;
+                opt.textContent = c.nombre;
+                selectCategoria.appendChild(opt);
+
+                const optFiltro = document.createElement("option");
+                optFiltro.value = c.nombre;
+                optFiltro.textContent = c.nombre;
+                filtroCategoria.appendChild(optFiltro);
+            });
+        }
+
+        // --- GUARDAR Y CARGAR TABLA ---
         function guardar() {
             localStorage.setItem("productos", JSON.stringify(productos));
             cargarTabla();
         }
 
-        // Aplica filtros sin modificar la lista
         function filtrar(lista) {
             const f = Object.fromEntries(new FormData(formFiltro));
             return lista.filter(p => {
                 if (f.id && String(p.id) !== String(f.id)) return false;
                 if (f.nombre && !(p.nombre || '').toLowerCase().includes(f.nombre.toLowerCase())) return false;
                 if (f.descripcion && !(p.descripcion || '').toLowerCase().includes(f.descripcion.toLowerCase())) return false;
-                if (f.categoria && !(p.categoria || '').toLowerCase().includes(f.categoria.toLowerCase())) return false; // NUEVO
+                if (f.categoria && p.categoria !== f.categoria) return false;
                 if (f.precioMin && Number(p.precio) < Number(f.precioMin)) return false;
                 if (f.precioMax && Number(p.precio) > Number(f.precioMax)) return false;
                 if (f.stockMin && Number(p.stock) < Number(f.stockMin)) return false;
@@ -115,7 +139,7 @@
                 <td>${p.id}</td>
                 <td>${p.nombre}</td>
                 <td>${p.descripcion || ''}</td>
-                <td>${p.categoria || ''}</td><!-- NUEVO -->
+                <td>${p.categoria || ''}</td>
                 <td>${Number(p.precio).toFixed(2)}</td>
                 <td>${p.stock}</td>
                 <td>
@@ -134,10 +158,10 @@
                 id: id,
                 nombre: data.nombre,
                 descripcion: data.descripcion,
-                categoria: data.categoria || "", // NUEVO
+                categoria: data.categoria,
                 precio: parseFloat(data.precio),
                 stock: parseInt(data.stock),
-                fecha: new Date()
+                fecha: new Date().toISOString()
             });
             guardar();
             form.reset();
@@ -151,7 +175,6 @@
             }
         });
 
-
         formFiltro.addEventListener("submit", e => {
             e.preventDefault();
             cargarTabla();
@@ -161,6 +184,8 @@
             cargarTabla();
         });
 
+        // --- Inicialización ---
+        cargarCategorias();
         cargarTabla();
     });
 </script>

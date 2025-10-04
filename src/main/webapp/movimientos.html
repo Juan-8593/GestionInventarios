@@ -64,11 +64,10 @@
         function cargarMovimientos() {
             tabla.innerHTML = "";
             movimientos.forEach(m => {
-                const producto = productos.find(p => p.id === m.productoId);
                 const fila = document.createElement("tr");
                 fila.innerHTML = `
                     <td>${m.id}</td>
-                    <td>${producto ? producto.nombre : "Desconocido"}</td>
+                    <td>${m.productoNombre || "Desconocido"}</td>
                     <td>${m.cantidad}</td>
                     <td>${m.tipo}</td>
                     <td>${m.motivo || ""}</td>
@@ -92,28 +91,27 @@
             const producto = productos.find(p => p.id === productoId);
             if (producto) {
                 if (data.tipo === "Entrada") {
-                    // Agregar stock
                     producto.stock += cantidad;
                 } else {
-                    // Validar que haya stock suficiente antes de restar
                     if (producto.stock === 0) {
-                        alert("❌ Este producto está agotado. No se puede registrar una salida.");
+                        alert("Este producto está agotado. No se puede registrar una salida.");
                         return;
                     }
                     if (producto.stock < cantidad) {
-                        alert(`❌ Stock insuficiente. Stock actual: ${producto.stock}`);
+                        alert(` Stock insuficiente. Stock actual: ${producto.stock}`);
                         return;
                     }
                     producto.stock -= cantidad;
                 }
                 localStorage.setItem("productos", JSON.stringify(productos));
-                cargarProductosSelect(); // refrescar el select con stock actualizado
+                cargarProductosSelect();
             }
 
             const id = movimientos.length > 0 ? movimientos[movimientos.length - 1].id + 1 : 1;
             movimientos.push({
                 id: id,
                 productoId: productoId,
+                productoNombre: producto ? producto.nombre : "Desconocido",
                 cantidad: cantidad,
                 tipo: data.tipo,
                 motivo: data.motivo,
