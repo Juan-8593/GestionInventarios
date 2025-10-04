@@ -8,6 +8,10 @@ Luis Angel Franco Cruz
 
 Juan Andrés Pirir Palma
 
-Daniela Marisabel López Aroche
+Daniela Marisabel Lopez Aroche
 
 Jonathan Eduardo Jolón García 
+
+Link Video
+
+https://drive.google.com/drive/folders/1mXCDGnrqWRNx8oLNP4jS6ALdoar-PrBX?usp=sharing
