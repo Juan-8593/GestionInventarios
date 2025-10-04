@@ -7,10 +7,11 @@
 </head>
 <body>
 <header>
-    <h1>Movimientos de Stock</h1>
+    <h1> Movimientos de Stock</h1>
     <nav class="menu">
         <button onclick="location.href='index.html'">Dashboard</button>
         <button onclick="location.href='productos.html'">Productos</button>
+        <button onclick="location.href='categorias.html'">Categorías</button>
     </nav>
 </header>
 
@@ -47,7 +48,6 @@
         const tabla = document.querySelector("#tablaMovimientos tbody");
         const form = document.getElementById("formMovimiento");
 
-        // Cargar productos desde localStorage
         let productos = JSON.parse(localStorage.getItem("productos")) || [];
         let movimientos = JSON.parse(localStorage.getItem("movimientos")) || [];
 
@@ -83,26 +83,20 @@
             cargarMovimientos();
         }
 
-        // Registrar movimiento
         form.addEventListener("submit", e => {
             e.preventDefault();
             const data = Object.fromEntries(new FormData(form));
             const productoId = parseInt(data.productoId);
             const cantidad = parseInt(data.cantidad);
 
-            // Actualizar stock del producto
             const producto = productos.find(p => p.id === productoId);
-            if (producto) {
-                if (data.tipo === "Entrada") {
-                    producto.stock += cantidad;
-                } else {
-                    producto.stock -= cantidad;
-                    if(producto.stock < 0) producto.stock = 0;
-                }
+            if(producto){
+                if(data.tipo === "Entrada") producto.stock += cantidad;
+                else producto.stock -= cantidad;
+                if(producto.stock < 0) producto.stock = 0;
                 localStorage.setItem("productos", JSON.stringify(productos));
             }
 
-            // Agregar movimiento
             const id = movimientos.length > 0 ? movimientos[movimientos.length-1].id + 1 : 1;
             movimientos.push({
                 id: id,
@@ -116,7 +110,6 @@
             form.reset();
         });
 
-        // Inicializar
         cargarProductosSelect();
         cargarMovimientos();
     });
