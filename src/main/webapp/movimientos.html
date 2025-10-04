@@ -56,7 +56,7 @@
             productos.forEach(p => {
                 const opt = document.createElement("option");
                 opt.value = p.id;
-                opt.textContent = p.nombre;
+                opt.textContent = `${p.nombre} (Stock: ${p.stock})`;
                 selectProducto.appendChild(opt);
             });
         }
@@ -67,13 +67,13 @@
                 const producto = productos.find(p => p.id === m.productoId);
                 const fila = document.createElement("tr");
                 fila.innerHTML = `
-                <td>${m.id}</td>
-                <td>${producto ? producto.nombre : "Desconocido"}</td>
-                <td>${m.cantidad}</td>
-                <td>${m.tipo}</td>
-                <td>${m.motivo || ""}</td>
-                <td>${new Date(m.fecha).toLocaleString()}</td>
-            `;
+                    <td>${m.id}</td>
+                    <td>${producto ? producto.nombre : "Desconocido"}</td>
+                    <td>${m.cantidad}</td>
+                    <td>${m.tipo}</td>
+                    <td>${m.motivo || ""}</td>
+                    <td>${new Date(m.fecha).toLocaleString()}</td>
+                `;
                 tabla.appendChild(fila);
             });
         }
@@ -90,14 +90,27 @@
             const cantidad = parseInt(data.cantidad);
 
             const producto = productos.find(p => p.id === productoId);
-            if(producto){
-                if(data.tipo === "Entrada") producto.stock += cantidad;
-                else producto.stock -= cantidad;
-                if(producto.stock < 0) producto.stock = 0;
+            if (producto) {
+                if (data.tipo === "Entrada") {
+                    // Agregar stock
+                    producto.stock += cantidad;
+                } else {
+                    // Validar que haya stock suficiente antes de restar
+                    if (producto.stock === 0) {
+                        alert("❌ Este producto está agotado. No se puede registrar una salida.");
+                        return;
+                    }
+                    if (producto.stock < cantidad) {
+                        alert(`❌ Stock insuficiente. Stock actual: ${producto.stock}`);
+                        return;
+                    }
+                    producto.stock -= cantidad;
+                }
                 localStorage.setItem("productos", JSON.stringify(productos));
+                cargarProductosSelect(); // refrescar el select con stock actualizado
             }
 
-            const id = movimientos.length > 0 ? movimientos[movimientos.length-1].id + 1 : 1;
+            const id = movimientos.length > 0 ? movimientos[movimientos.length - 1].id + 1 : 1;
             movimientos.push({
                 id: id,
                 productoId: productoId,
