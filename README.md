@@ -3,7 +3,7 @@ Desarrollar una aplicación web de gestión de inventarios que permita administr
 INTEGRANTES
 Andrea Alejandra López Jiménez
 
-Luis Ángel Franco Cruz
+Luis Angel Franco Cruz
 
 Juan Andrés Pirir Palma
 
